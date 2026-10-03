@@ -116,16 +116,13 @@ class OobClient(Client):
         if message.author == self.user:
             return
 
-        # Respond immediately if the message is a DM or mentions us.
-        if (
-            isinstance(message.channel, DMChannel)
-            or self.user.mentioned_in(message)
-            or any(
-                role in message.role_mentions
-                for role in self.user.roles
-                if not role.is_default()
-            )
-        ):
+        # Respond immediately if the message is a DM.
+        if isinstance(message.channel, DMChannel):
+            await self.oob(message.channel, message)
+            return
+
+        # Respond immediately if the message mentions us.
+        if message.guild and message.guild.me.mentioned_in(message):
             await self.oob(message.channel, message)
             return
 
